@@ -1,0 +1,41 @@
+label,message
+spam,Your bank account has been blocked. Verify now to reactivate it.
+spam,Your KYC has expired. Update your details immediately.
+spam,URGENT! Your bank account will be suspended. Verify now.
+spam,Your debit card will be blocked. Call immediately to activate it.
+spam,Your UPI account has been suspended. Click here to reactivate.
+spam,You have received a cashback reward. Claim it now.
+spam,Congratulations! You won a bank cashback of Rs 5000. Claim now.
+spam,Your account has suspicious activity. Verify your details immediately.
+spam,Your ATM card is expiring. Update your information now.
+spam,Your bank account requires immediate verification.
+spam,Your KYC verification is pending. Complete it immediately.
+spam,Click this link to verify your bank account.
+spam,Your bank account will be closed today unless you verify now.
+spam,URGENT! Verify your banking details to avoid account suspension.
+spam,You are eligible for a special bank cashback. Claim your reward.
+spam,Your debit card has been temporarily blocked. Verify now.
+spam,Your UPI service will be disabled. Click here to continue.
+spam,Your account has won a special reward. Claim your cash prize.
+spam,Verify your PAN and bank details immediately.
+spam,Your bank account security has been compromised. Click to verify.
+spam,Limited time bank cashback offer. Claim your reward now.
+spam,Your card has been selected for a cashback reward.
+spam,Important! Your KYC information needs immediate verification.
+spam,Click now to prevent your bank account from being suspended.
+spam,Your banking account will be blocked unless you complete KYC.
+ham,Your bank account balance is Rs 5250.
+ham,Your UPI payment of Rs 500 was successful.
+ham,Your debit card payment was successful.
+ham,Your monthly bank statement is now available.
+ham,Your account has been credited with Rs 2000.
+ham,Your ATM withdrawal of Rs 1000 was successful.
+ham,Your UPI transaction has been completed successfully.
+ham,Your bank statement is ready to view.
+ham,Your payment of Rs 750 was received successfully.
+ham,Your account balance has been updated.
+ham,Your scheduled bank payment was completed.
+ham,Your debit card transaction was successful.
+ham,Your UPI payment has been processed.
+ham,Your bank account statement is available.
+ham,Your salary has been credited to your account.

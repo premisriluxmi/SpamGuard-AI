@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SpamGuard AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, #17172d 0%, #0b0b16 45%, #080811 100%);
+            color: #f5f5ff;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1200px, 94%);
+            margin: auto;
+            padding: 24px 0 30px;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .logo {
+            font-size: 42px;
+            margin-bottom: 4px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #a9a8c7;
+            margin-top: 5px;
+            font-size: 15px;
+        }
+
+        /* ================= MAIN GRID ================= */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .card {
+            background: rgba(22, 22, 40, 0.94);
+            border: 1px solid #2c2c4b;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.22);
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 17px;
+        }
+
+        /* ================= INPUT ================= */
+
+        .input-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-wrapper {
+            background: #11111f;
+            border: 1px solid #30304d;
+            border-radius: 14px;
+            padding: 4px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 220px;
+            resize: vertical;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #fff;
+            padding: 15px;
+            font-size: 15px;
+            line-height: 1.6;
+            font-family: inherit;
+        }
+
+        textarea::placeholder {
+            color: #777693;
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px 10px;
+            color: #8583a4;
+            font-size: 13px;
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: #9b99c3;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .clear-btn:hover {
+            color: #fff;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7567ff, #9b6cff);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(120, 100, 255, 0.25);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .tip {
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-radius: 10px;
+            background: #121225;
+            color: #8987a9;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* ================= RESULT ================= */
+
+        .result-card {
+            min-height: 100%;
+        }
+
+        #result {
+            display: none;
+        }
+
+        .result-title {
+            text-align: center;
+            font-size: 27px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .result-status {
+            text-align: center;
+            color: #aaa9c5;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .probability {
+            margin-bottom: 15px;
+        }
+
+        .probability-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: 14px;
+            color: #d8d7e8;
+        }
+
+        .progress {
+            height: 9px;
+            background: #292941;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .safe-bar {
+            background: linear-gradient(90deg, #31cf8a, #65e4ae);
+        }
+
+        .spam-bar {
+            background: linear-gradient(90deg, #ed4d69, #ff7187);
+        }
+
+        .confidence {
+            margin: 20px 0;
+            padding: 17px;
+            text-align: center;
+            border-radius: 14px;
+            background: #1b1b32;
+            border: 1px solid #29294a;
+        }
+
+        .confidence-label {
+            color: #aaa8c6;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        #confidenceValue {
+            font-size: 28px;
+            font-weight: 700;
+            color: #a98cff;
+        }
+
+        /* ================= ANALYSIS ================= */
+
+        .analysis-card {
+            background: #151529;
+            border: 1px solid #2c2c4a;
+            border-radius: 15px;
+            padding: 17px;
+            margin-top: 10px;
+        }
+
+        .analysis-card h3 {
+            font-size: 17px;
+            margin-bottom: 14px;
+        }
+
+        .analysis-section {
+            margin-top: 13px;
+        }
+
+        .analysis-section h4 {
+            font-size: 13px;
+            color: #d9d8e8;
+            margin-bottom: 8px;
+        }
+
+        .keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .keyword-tag {
+            background: #292347;
+            color: #c5b8ff;
+            border: 1px solid #40386b;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .no-keywords {
+            color: #4ee3a1;
+            font-size: 12px;
+        }
+
+        .why-text {
+            color: #a7a5bd;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ================= EMPTY RESULT ================= */
+
+        .empty-result {
+            height: 100%;
+            min-height: 440px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #777691;
+        }
+
+        .empty-result-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-result h3 {
+            color: #d8d7e8;
+            margin-bottom: 6px;
+        }
+
+        .empty-result p {
+            font-size: 13px;
+        }
+
+        /* ================= DASHBOARD ================= */
+
+        .dashboard-card {
+            margin-top: 18px;
+        }
+
+        .dashboard-title {
+            font-size: 19px;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .dashboard-item {
+            background: #151526;
+            border: 1px solid #282842;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .dashboard-icon {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-number {
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .dashboard-label {
+            color: #aaa8c5;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        /* ================= HISTORY ================= */
+
+        .history-card {
+            margin-top: 18px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 13px;
+        }
+
+        .history-header h2 {
+            font-size: 19px;
+        }
+
+        .clear-history {
+            background: transparent;
+            border: 1px solid #353557;
+            color: #a8a6ca;
+            padding: 7px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .clear-history:hover {
+            color: #fff;
+            border-color: #65638c;
+        }
+
+        #historyList {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .history-item {
+            background: #151526;
+            border: 1px solid #2b2b45;
+            border-radius: 12px;
+            padding: 13px;
+            min-width: 0;
+        }
+
+        .history-message {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-result {
+            margin-top: 7px;
+            color: #9290ad;
+            font-size: 11px;
+        }
+
+        .empty-history {
+            color: #777691;
+            font-size: 13px;
+            padding: 10px 0;
+        }
+
+        /* ================= INFO ================= */
+
+        .info-grid {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .info-card {
+            background: #11111f;
+            border: 1px solid #292943;
+            border-radius: 13px;
+            padding: 15px 18px;
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            color: #9290ad;
+            font-size: 12px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            color: #666580;
+            font-size: 11px;
+            margin-top: 20px;
+            padding-bottom: 5px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .empty-result {
+                min-height: 300px;
+            }
+
+            #historyList {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                padding-top: 15px;
+            }
+
+            .title {
+                font-size: 27px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                min-height: 170px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+
+
+        /* =====================================================
+           FINAL UI POLISH — SPAMGUARD AI
+           Keeps the existing structure and functionality.
+        ===================================================== */
+        html { scroll-behavior: smooth; }
+
+        body {
+            background:
+                radial-gradient(circle at 15% 0%, rgba(117, 103, 255, 0.14), transparent 32%),
+                radial-gradient(circle at 85% 12%, rgba(155, 108, 255, 0.10), transparent 28%),
+                linear-gradient(180deg, #090914 0%, #07070f 100%);
+        }
+
+        .container {
+            width: min(1180px, calc(100% - 40px));
+            padding: 34px 0 28px;
+        }
+
+        .header {
+            margin-bottom: 28px;
+            padding: 4px 0 2px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 10px;
+            display: grid;
+            place-items: center;
+            font-size: 31px;
+            border: 1px solid rgba(150, 136, 255, 0.28);
+            border-radius: 18px;
+            background: linear-gradient(145deg, rgba(117,103,255,.18), rgba(155,108,255,.07));
+            box-shadow: 0 12px 35px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.05);
+        }
+
+        .title {
+            font-size: clamp(30px, 4vw, 38px);
+            letter-spacing: -0.8px;
+        }
+
+        .subtitle {
+            max-width: 520px;
+            margin: 7px auto 0;
+            line-height: 1.5;
+        }
+
+        .main-grid {
+            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(22,22,40,.96), rgba(15,15,29,.96));
+            border: 1px solid rgba(105, 100, 153, 0.27);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 18px 45px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.025);
+        }
+
+        .card:hover {
+            border-color: rgba(130, 119, 200, 0.38);
+        }
+
+        .section-title,
+        .dashboard-title,
+        .history-header h2 {
+            letter-spacing: -0.25px;
+        }
+
+        .section-title { margin-bottom: 15px; }
+
+        .input-wrapper {
+            background: rgba(8,8,18,.58);
+            border-color: #30304d;
+            border-radius: 13px;
+        }
+
+        textarea {
+            min-height: 205px;
+            line-height: 1.55;
+        }
+
+        textarea:focus {
+            outline: none;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: rgba(137, 119, 255, .72);
+            box-shadow: 0 0 0 3px rgba(117,103,255,.09);
+        }
+
+        .analyze-btn {
+            margin-top: 13px;
+            padding: 14px 16px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #6f61f7, #9a5cf4);
+            box-shadow: 0 10px 25px rgba(117,103,255,.12);
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 30px rgba(117,103,255,.22);
+        }
+
+        .tip {
+            margin-top: 12px;
+            background: rgba(14,14,29,.78);
+            border: 1px solid rgba(80,78,121,.22);
+            border-radius: 10px;
+        }
+
+        .result-card {
+            min-height: 100%;
+        }
+
+        .empty-result {
+            min-height: 452px;
+            padding: 20px;
+        }
+
+        .empty-result-icon {
+            width: 74px;
+            height: 74px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 15px;
+            border-radius: 22px;
+            background: rgba(117,103,255,.08);
+            border: 1px solid rgba(117,103,255,.18);
+            font-size: 38px;
+        }
+
+        .result-title {
+            font-size: 26px;
+            letter-spacing: -0.4px;
+        }
+
+        .result-status {
+            margin-bottom: 18px;
+        }
+
+        .probability {
+            margin-bottom: 14px;
+        }
+
+        .progress {
+            height: 8px;
+            background: #25253a;
+        }
+
+        .confidence {
+            margin: 18px 0;
+            padding: 15px;
+            border-radius: 13px;
+            background: linear-gradient(145deg, #1b1b32, #18182b);
+        }
+
+        #confidenceValue {
+            font-size: 27px;
+        }
+
+        .analysis-card {
+            margin-top: 9px;
+            padding: 16px;
+            border-radius: 14px;
+            background: rgba(17,17,34,.82);
+        }
+
+        .analysis-section {
+            margin-top: 11px;
+        }
+
+        .keyword-list {
+            gap: 7px;
+            min-height: 25px;
+        }
+
+        .keyword-tag {
+            padding: 5px 10px;
+            background: rgba(61, 47, 111, .46);
+            border-color: rgba(104, 89, 169, .5);
+            transition: transform .15s ease, border-color .15s ease;
+        }
+
+        .keyword-tag:hover {
+            transform: translateY(-1px);
+            border-color: rgba(142, 125, 224, .7);
+        }
+
+        .why-text {
+            line-height: 1.55;
+        }
+
+        .dashboard-card,
+        .history-card {
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            padding: 20px;
+        }
+
+        .dashboard-title {
+            margin-bottom: 13px;
+        }
+
+        .dashboard-grid {
+            gap: 13px;
+        }
+
+        .dashboard-item {
+            position: relative;
+            padding: 17px 14px;
+            background: linear-gradient(145deg, rgba(21,21,38,.95), rgba(16,16,30,.95));
+            border-color: rgba(91,88,135,.28);
+            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .dashboard-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(123,112,188,.48);
+            box-shadow: 0 10px 25px rgba(0,0,0,.16);
+        }
+
+        .dashboard-icon {
+            font-size: 23px;
+            margin-bottom: 6px;
+        }
+
+        .dashboard-number {
+            font-size: 26px;
+            line-height: 1.1;
+        }
+
+        .dashboard-label {
+            margin-top: 5px;
+        }
+
+        .history-card {
+            padding: 20px;
+        }
+
+        .history-header {
+            margin-bottom: 12px;
+        }
+
+        .clear-history {
+            padding: 7px 12px;
+            border-radius: 9px;
+            transition: .18s ease;
+        }
+
+        .clear-history:hover {
+            background: rgba(117,103,255,.08);
+            transform: translateY(-1px);
+        }
+
+        #historyList {
+            gap: 10px;
+        }
+
+        .history-item {
+            padding: 13px 14px;
+            background: linear-gradient(145deg, rgba(21,21,38,.94), rgba(16,16,30,.94));
+            border-color: rgba(76,75,116,.28);
+            transition: transform .18s ease, border-color .18s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-1px);
+            border-color: rgba(105,98,160,.45);
+        }
+
+        .history-message {
+            line-height: 1.42;
+        }
+
+        .history-result {
+            margin-top: 8px;
+        }
+
+        .info-grid {
+            margin-top: 20px;
+            gap: 12px;
+        }
+
+        .info-card {
+            padding: 14px 17px;
+            background: rgba(14,14,26,.86);
+            border-color: rgba(74,73,112,.25);
+            transition: border-color .18s ease;
+        }
+
+        .info-card:hover {
+            border-color: rgba(105,98,160,.42);
+        }
+
+        .info-card h3 {
+            margin-bottom: 4px;
+        }
+
+        .footer {
+            margin-top: 17px;
+            opacity: .78;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                width: min(94%, 720px);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .empty-result {
+                min-height: 300px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                width: calc(100% - 24px);
+                padding-top: 20px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+
+            .logo {
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
+            }
+
+            .card,
+            .dashboard-card,
+            .history-card {
+                padding: 16px;
+                border-radius: 15px;
+            }
+
+            textarea {
+                min-height: 165px;
+            }
+
+            .dashboard-grid,
+            #historyList,
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-item {
+                padding: 14px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+        <div class="logo">🛡️</div>
+
+        <h1 class="title">SpamGuard AI</h1>
+
+        <p class="subtitle">
+            AI-Powered Spam & Scam Message Detection
+        </p>
+    </header>
+
+
+    <!-- ================= MAIN TWO COLUMN AREA ================= -->
+
+    <div class="main-grid">
+
+        <!-- ================= LEFT: SCANNER ================= -->
+
+        <div class="card input-card">
+
+            <h2 class="section-title">
+                ✨ Analyze Your Message
+            </h2>
+
+            <div class="input-wrapper">
+
+                <textarea
+                    id="message"
+                    maxlength="500"
+                    placeholder="Type or paste your message here..."></textarea>
+
+                <div class="input-footer">
+
+                    <span id="charCount">
+                        0 / 500
+                    </span>
+
+                    <button
+                        class="clear-btn"
+                        onclick="clearMessage()">
+                        Clear
+                    </button>
+
+                </div>
+
+            </div>
+
+            <button
+                class="analyze-btn"
+                onclick="analyzeMessage()">
+
+                ⚡ ANALYZE MESSAGE
+
+            </button>
+
+            <div class="tip">
+                💡 <strong>Tip:</strong>
+                Never share passwords, OTPs or sensitive personal information.
+            </div>
+            <div class="tip">
+             🚨 <strong>Tip:</strong>
+                Be careful with messages creating urgency or asking for immediate action.            </div>
+        </div>
+
+
+        <!-- ================= RIGHT: RESULT ================= -->
+
+        <div class="card result-card">
+
+            <!-- BEFORE ANALYSIS -->
+
+            <div id="emptyResult" class="empty-result">
+
+                <div>
+
+                    <div class="empty-result-icon">
+                        🔍
+                    </div>
+
+                    <h3>
+                        Ready to Analyze
+                    </h3>
+
+                    <p>
+                        Enter a message and let SpamGuard AI check it.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- AFTER ANALYSIS -->
+
+            <div id="result">
+
+                <div
+                    id="resultTitle"
+                    class="result-title">
+                </div>
+
+                <div
+                    id="resultStatus"
+                    class="result-status">
+                </div>
+
+
+                <!-- NOT SPAM -->
+
+                <div class="probability">
+
+                    <div class="probability-header">
+
+                        <span>
+                            🟢 Not Spam
+                        </span>
+
+                        <span id="notSpamValue">
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            id="notSpamBar"
+                            class="progress-bar safe-bar">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SPAM -->
+
+                <div class="probability">
+
+                    <div class="probability-header">
+
+                        <span>
+                            🔴 Spam
+                        </span>
+
+                        <span id="spamValue">
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            id="spamBar"
+                            class="progress-bar spam-bar">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONFIDENCE -->
+
+                <div class="confidence">
+
+                    <div class="confidence-label">
+                        🤖 AI Confidence
+                    </div>
+
+                    <span id="confidenceValue">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <!-- SMART ANALYSIS -->
+
+                <div class="analysis-card">
+
+                    <h3>
+                        🧠 Smart Analysis
+                    </h3>
+
+                    <div class="analysis-section">
+
+                        <h4>
+                            🔑 Detected Keywords
+                        </h4>
+
+                        <div
+                            id="keywordList"
+                            class="keyword-list">
+
+                            <span class="no-keywords">
+                                No suspicious keywords detected
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="analysis-section">
+
+                        <h4>
+                            💡 Why was this detected?
+                        </h4>
+
+                        <p
+                            id="whyDetected"
+                            class="why-text">
+
+                            Analyze a message to see why the AI
+                            classified it this way.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= PROTECTION DASHBOARD ================= -->
+
+    <div class="card dashboard-card">
+
+        <h2 class="dashboard-title">
+            📊 Protection Dashboard
+        </h2>
+
+        <div class="dashboard-grid">
+
+            <div class="dashboard-item">
+
+                <div class="dashboard-icon">
+                    💬
+                </div>
+
+                <div
+                    id="totalMessages"
+                    class="dashboard-number">
+                    0
+                </div>
+
+                <div class="dashboard-label">
+                    Messages Analyzed
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-item">
+
+                <div class="dashboard-icon">
+                    🛡️
+                </div>
+
+                <div
+                    id="safeMessages"
+                    class="dashboard-number">
+                    0
+                </div>
+
+                <div class="dashboard-label">
+                    Safe Messages
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-item">
+
+                <div class="dashboard-icon">
+                    🚨
+                </div>
+
+                <div
+                    id="spamMessages"
+                    class="dashboard-number">
+                    0
+                </div>
+
+                <div class="dashboard-label">
+                    Spam Detected
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= RECENT HISTORY ================= -->
+
+    <div class="card history-card">
+
+        <div class="history-header">
+
+            <h2>
+                🕘 Recent Analysis
+            </h2>
+
+            <button
+                class="clear-history"
+                onclick="clearHistory()">
+
+                Clear History
+
+            </button>
+
+        </div>
+
+
+        <div id="historyList">
+
+            <p class="empty-history">
+                No messages analyzed yet.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= PROJECT INFO ================= -->
+
+    <div class="info-grid">
+
+        <div class="info-card">
+
+            <h3>
+                🤖 AI Model
+            </h3>
+
+            <p>
+                TF-IDF + Multinomial Naive Bayes
+            </p>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <h3>
+                📊 Training Dataset
+            </h3>
+
+            <p>
+                5,198 unique SMS messages
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <div class="footer">
+
+        SpamGuard AI • Machine Learning Message Protection
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+    /* ================= ELEMENTS ================= */
+
+    const messageBox =
+        document.getElementById("message");
+
+    const charCount =
+        document.getElementById("charCount");
+
+
+    /* ================= CHARACTER COUNT ================= */
+
+    messageBox.addEventListener("input", function () {
+
+        charCount.innerText =
+            messageBox.value.length + " / 500";
+
+    });
+
+
+    /* ================= CLEAR MESSAGE ================= */
+
+    function clearMessage() {
+
+        messageBox.value = "";
+
+        charCount.innerText = "0 / 500";
+
+        document.getElementById("result").style.display =
+            "none";
+
+        document.getElementById("emptyResult").style.display =
+            "flex";
+
+    }
+
+
+    /* ================= SPAM KEYWORDS ================= */
+
+    const spamKeywords = [
+
+        "free",
+        "winner",
+        "won",
+        "win",
+        "prize",
+        "cash",
+        "reward",
+        "claim",
+        "urgent",
+        "offer",
+        "click",
+        "click now",
+        "selected",
+        "congratulations",
+        "congrats",
+        "lottery",
+        "gift",
+        "bonus",
+        "money",
+        "credit",
+        "guaranteed",
+        "call now",
+        "limited",
+        "voucher",
+        "discount",
+        "http",
+        "www",
+        "link"
+
+    ];
+
+
+    /* ================= DETECT KEYWORDS ================= */
+
+    function detectKeywords(message) {
+
+        const lowerMessage =
+            message.toLowerCase();
+
+        const detected = [];
+
+        spamKeywords.forEach(function (keyword) {
+
+            if (lowerMessage.includes(keyword)) {
+
+                detected.push(keyword);
+
+            }
+
+        });
+
+        return [...new Set(detected)];
+
+    }
+
+
+    /* ================= EXPLANATION ================= */
+
+    function generateExplanation(
+        prediction,
+        confidence,
+        keywords,
+        message,
+        backendExplanation = ""
+    ) {
+
+        const whyDetected =
+            document.getElementById("whyDetected");
+
+        if (backendExplanation) {
+            whyDetected.innerText = backendExplanation;
+            return;
+        }
+
+        if (prediction === "SPAM") {
+
+            if (keywords.length > 0) {
+
+                whyDetected.innerHTML =
+
+                    "This message was classified as " +
+                    "<strong>SPAM</strong> because it " +
+                    "contains patterns commonly associated " +
+                    "with promotional or suspicious messages. " +
+                    "Detected indicators include " +
+                    "<strong>" +
+                    keywords.join(", ") +
+                    "</strong>.";
+
+            }
+
+            else {
+
+                whyDetected.innerHTML =
+
+                    "The machine learning model identified " +
+                    "this message as similar to spam messages " +
+                    "in its training data.";
+
+            }
+
+        }
+
+        else {
+
+            if (keywords.length === 0) {
+
+                whyDetected.innerHTML =
+
+                    "The message does not contain common " +
+                    "spam indicators such as prize claims, " +
+                    "urgent offers, suspicious links, or " +
+                    "promotional keywords. The model therefore " +
+                    "classified it as <strong>NOT SPAM</strong>.";
+
+            }
+
+            else {
+
+                whyDetected.innerHTML =
+
+                    "Although some words can appear in spam " +
+                    "messages, the overall message pattern was " +
+                    "classified as <strong>NOT SPAM</strong> by " +
+                    "the trained machine learning model.";
+
+            }
+
+        }
+
+    }
+
+
+    /* ================= DISPLAY KEYWORDS ================= */
+
+    function displayKeywords(keywords) {
+
+        const keywordList =
+            document.getElementById("keywordList");
+
+        keywordList.innerHTML = "";
+
+
+        if (keywords.length === 0) {
+
+            keywordList.innerHTML =
+
+                '<span class="no-keywords">' +
+                '✓ No suspicious keywords detected' +
+                '</span>';
+
+            return;
+
+        }
+
+
+        keywords.forEach(function (keyword) {
+
+            const tag =
+                document.createElement("span");
+
+            tag.className =
+                "keyword-tag";
+
+            tag.innerText =
+                keyword;
+
+            keywordList.appendChild(tag);
+
+        });
+
+    }
+
+
+    /* ================= ANALYZE MESSAGE ================= */
+
+    async function analyzeMessage() {
+
+        const message =
+            messageBox.value.trim();
+
+
+        if (!message) {
+
+            alert(
+                "Please enter a message first."
+            );
+
+            return;
+
+        }
+
+
+        const button =
+            document.querySelector(".analyze-btn");
+
+
+        button.innerHTML =
+            "⏳ ANALYZING...";
+
+        button.disabled = true;
+
+
+        try {
+
+            /* SEND TO FLASK */
+
+            const response =
+                await fetch("/analyze", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+
+                });
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok || data.error) {
+
+                throw new Error(
+                    data.error ||
+                    "Server error"
+                );
+
+            }
+
+
+            /* HIDE EMPTY STATE */
+
+            document.getElementById(
+                "emptyResult"
+            ).style.display = "none";
+
+
+            /* SHOW RESULT */
+
+            document.getElementById(
+                "result"
+            ).style.display = "block";
+
+
+            /* RESULT TITLE */
+
+            if (data.prediction === "SPAM") {
+
+                document.getElementById(
+                    "resultTitle"
+                ).innerHTML =
+                    "🚨 SPAM MESSAGE";
+
+                document.getElementById(
+                    "resultStatus"
+                ).innerHTML =
+                    "This message appears to be suspicious.";
+
+            }
+
+            else {
+
+                document.getElementById(
+                    "resultTitle"
+                ).innerHTML =
+                    "🛡️ SAFE MESSAGE";
+
+                document.getElementById(
+                    "resultStatus"
+                ).innerHTML =
+                    "This message appears to be safe.";
+
+            }
+
+
+            /* PROBABILITIES */
+
+            document.getElementById(
+                "notSpamValue"
+            ).innerText =
+                data.not_spam_probability + "%";
+
+
+            document.getElementById(
+                "spamValue"
+            ).innerText =
+                data.spam_probability + "%";
+
+
+            document.getElementById(
+                "confidenceValue"
+            ).innerText =
+                data.confidence + "%";
+
+
+            /* PROGRESS BARS */
+
+            document.getElementById(
+                "notSpamBar"
+            ).style.width =
+                data.not_spam_probability + "%";
+
+
+            document.getElementById(
+                "spamBar"
+            ).style.width =
+                data.spam_probability + "%";
+
+
+            /* KEYWORD ANALYSIS — USE BACKEND RESULTS */
+
+            const keywords =
+                data.keywords || [];
+
+            displayKeywords(keywords);
+
+            generateExplanation(
+                data.prediction,
+                data.confidence,
+                keywords,
+                message,
+                data.explanation
+            );
+
+
+            /* SAVE HISTORY */
+
+            saveToHistory({
+
+                message: message,
+
+                prediction:
+                    data.prediction,
+
+                confidence:
+                    data.confidence,
+
+                keywords:
+                    keywords
+
+            });
+
+
+            /* UPDATE DASHBOARD */
+
+            updateDashboard();
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Analysis Error:",
+                error
+            );
+
+            alert(
+                "Something went wrong. Please try again."
+            );
+
+        }
+
+
+        finally {
+
+            button.innerHTML =
+                "⚡ ANALYZE MESSAGE";
+
+            button.disabled =
+                false;
+
+        }
+
+    }
+
+
+    /* ================= HISTORY ================= */
+
+    function saveToHistory(item) {
+
+        let history =
+            JSON.parse(
+                localStorage.getItem(
+                    "spamguard_history"
+                )
+            ) || [];
+
+
+        history.unshift(item);
+
+
+        /* Keep latest 10 */
+
+        history =
+            history.slice(0, 10);
+
+
+        localStorage.setItem(
+
+            "spamguard_history",
+
+            JSON.stringify(history)
+
+        );
+
+
+        displayHistory();
+
+    }
+
+
+    /* ================= DISPLAY HISTORY ================= */
+
+    function displayHistory() {
+
+        const historyList =
+            document.getElementById(
+                "historyList"
+            );
+
+
+        const history =
+            JSON.parse(
+                localStorage.getItem(
+                    "spamguard_history"
+                )
+            ) || [];
+
+
+        historyList.innerHTML = "";
+
+
+        if (history.length === 0) {
+
+            historyList.innerHTML =
+
+                '<p class="empty-history">' +
+                'No messages analyzed yet.' +
+                '</p>';
+
+            return;
+
+        }
+
+
+        history.forEach(function (item) {
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "history-item";
+
+
+            const icon =
+                item.prediction === "SPAM"
+                    ? "🚨"
+                    : "🛡️";
+
+
+            card.innerHTML = `
+
+                <div class="history-message">
+
+                    ${icon}
+
+                    "${escapeHTML(item.message)}"
+
+                </div>
+
+                <div class="history-result">
+
+                    ${item.prediction === "SPAM"
+                        ? "SPAM"
+                        : "NOT SPAM"}
+
+                    • Confidence:
+                    ${item.confidence}%
+
+                </div>
+
+            `;
+
+
+            historyList.appendChild(card);
+
+        });
+
+    }
+
+
+    /* ================= CLEAR HISTORY ================= */
+
+    function clearHistory() {
+
+        localStorage.removeItem(
+            "spamguard_history"
+        );
+
+
+        displayHistory();
+
+        updateDashboard();
+
+    }
+
+
+    /* ================= DASHBOARD ================= */
+
+    function updateDashboard() {
+
+        const history =
+            JSON.parse(
+                localStorage.getItem(
+                    "spamguard_history"
+                )
+            ) || [];
+
+
+        const total =
+            history.length;
+
+
+        const spam =
+            history.filter(
+                item =>
+                    item.prediction === "SPAM"
+            ).length;
+
+
+        const safe =
+            history.filter(
+                item =>
+                    item.prediction === "NOT SPAM"
+            ).length;
+
+
+        document.getElementById(
+            "totalMessages"
+        ).innerText =
+            total;
+
+
+        document.getElementById(
+            "safeMessages"
+        ).innerText =
+            safe;
+
+
+        document.getElementById(
+            "spamMessages"
+        ).innerText =
+            spam;
+
+    }
+
+
+    /* ================= SECURITY ================= */
+
+    function escapeHTML(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            text;
+
+        return div.innerHTML;
+
+    }
+
+
+    /* ================= INITIAL LOAD ================= */
+
+    displayHistory();
+
+    updateDashboard();
+</script>
+
+</body>
+</html> 
