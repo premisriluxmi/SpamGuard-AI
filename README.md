@@ -1,5 +1,6 @@
 # SpamGuard-AI
 AI-powered spam and scam message detection using machine learning.
+
 ## AI-Powered Spam & Scam Message Detection
 
 SpamGuard AI is a machine learning based web application that checks whether an SMS message is **Spam or Not Spam**.
@@ -127,13 +128,13 @@ Spam-Message-Detector/
 ### 1. Clone the Repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_LINK
+git clone https://github.com/premisriluxmi/SpamGuard-AI.git
 ```
 
 ### 2. Open the Project Folder
 
 ```bash
-cd Spam-Message-Detector
+cd SpamGuard-AI
 ```
 
 ### 3. Install the Required Libraries
